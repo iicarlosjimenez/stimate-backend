@@ -5,6 +5,15 @@ const validator = require("../libs/validator");
 
 const router = express.Router();
 
+router.get('/config', async (req, res) => {
+   const prices = await stripe.prices.list();
+ 
+   res.send({
+     publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
+     prices: prices.data,
+   });
+ });
+
 router.get("/", (req, res) => {
    res.json({message: "Stripe"})
 })
@@ -75,9 +84,9 @@ router.post("/customer/create", async (req, res) => {
 // store subscription
 router.post("/subscription/create", async (req, res) => {
    const rules = {
-      plan: ["required"],
-      email: ["required"],
-      stripeToken: ["required"]
+      customer: ["required"],
+      price: ["required"],
+      quantity: ["required"]
    };
    const validate = validator(rules, req.body);
 

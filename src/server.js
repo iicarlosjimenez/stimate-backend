@@ -1,5 +1,6 @@
-const cors = require('cors')
 const express = require('express')
+const cors = require('cors')
+require('dotenv').config();
 
 const app = express()
 
@@ -8,6 +9,19 @@ const stripeRouter = require('./routes/stripe')
 
 app.use(cors())
 app.use(express.json())
+if (
+   !process.env.STRIPE_SECRET_KEY ||
+   !process.env.STRIPE_PUBLISHABLE_KEY 
+) {
+   console.log(
+      'The .env file is not configured. Follow the instructions in the readme to configure the .env file. https://github.com/stripe-samples/subscription-use-cases'
+   );
+   console.log('');
+} 
+else {
+   console.log('Stripe environments, OK!');
+   
+}
 
 // Rutas
 app.use('/project', projectRouter)
