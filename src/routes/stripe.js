@@ -62,8 +62,7 @@ router.post("/product/create", async (req, res) => {
 // store customer
 router.post("/customer/create", async (req, res) => {
    const rules = {
-      email: ["required"],
-      name: ["required"]
+      email: ["required"]
    };
    const validate = validator(rules, req.body);
 
@@ -72,11 +71,13 @@ router.post("/customer/create", async (req, res) => {
       res.send({ status: false, messages: validate.messages });
       return
    }
-   const { email, name } = req.body
-   const customer = await stripe.customers.create({
-      email, name
-   }
-   )
+   const { email } = req.body
+
+   // Validar si existe el correo en nuestra base de datos
+   // Si no existe, crearlo en stripe
+   // Si existe, validar si cuenta con id de stripe
+     // si no cuenta con id, crearlo en stripe 
+   const customer = await stripe.customers.create({email})
 
    res.send(customer)
 });
@@ -84,9 +85,8 @@ router.post("/customer/create", async (req, res) => {
 // store subscription
 router.post("/subscription/create", async (req, res) => {
    const rules = {
-      customer: ["required"],
-      price: ["required"],
-      quantity: ["required"]
+      customerId: ["required"],
+      price: ["required"]
    };
    const validate = validator(rules, req.body);
 
@@ -96,19 +96,26 @@ router.post("/subscription/create", async (req, res) => {
       return
    }
 
-   const { plan, email, stripeToken } = req.body
+   const { customerId, price } = req.body
 
-   const customer = await stripe.customers.create({
-      email: email,
-      source: stripeToken,
-   });
+   // El cliente debe tener un método de pago predeterminado...
+   try { 
+      const subscription = await stripe.subscriptions.create({
+         customer: customerId,
+         items: [{ price }],
+         payment_behavior: 'default_incomplete',
+         expand: ['latest_invoice.payment_intent'],
+      });
+   
+      res.send({
+         subscriptionId: subscription.id,
+         clientSecret: subscription.latest_invoice.payment_intent.client_secret,
+       });
 
-   const subscription = await stripe.subscriptions.create({
-      customer: customer.id,
-      items: [{ plan: plan }],
-   });
-
-   res.send({ subscription });
+   }
+   catch (error) {
+      return res.status(400).send({ error: { message: error.message } });
+   }
 })
 
 module.exports = router;
