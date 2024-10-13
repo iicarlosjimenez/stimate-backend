@@ -1,6 +1,5 @@
 const express = require("express");
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY_SANDBOX)
-const createError = require("http-errors");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 const validator = require("../libs/validator");
 
 const router = express.Router();
