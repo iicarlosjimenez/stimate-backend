@@ -4,8 +4,8 @@ require('dotenv').config();
 
 const app = express()
 
-const projectRouter = require('./routes/project')
-const stripeRouter = require('./routes/stripe')
+const projectRouter = require('./routes/project.router')
+const stripeRouter = require('./routes/stripe.router')
 
 app.use(cors())
 app.use(express.json())
