@@ -580,6 +580,19 @@
          "profit": 0,
          "tax": 0,
          "notes": ""
+      },
+      {
+         "slug": "material-educativo-d5g7yt",
+         "name_project": "Material Educativo",
+         "status_project": "Canceled",
+         "team_project": [],
+         "features_project": [],
+         "operating_expenses": [],
+         "associated_costs": [],
+         "sale_comission": 0,
+         "profit": 0,
+         "tax": 0,
+         "notes": ""
       }
    ]
 }
