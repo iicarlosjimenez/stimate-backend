@@ -1,6 +1,6 @@
 const express = require("express")
 const cors = require("cors")
-const responseHttp = require("./libs/responseHttp")
+const responseMiddleware = require("./middlewares/responseHttp");
 
 const app = express()
 
@@ -9,6 +9,8 @@ const paymentRouter = require("./routes/payment.router")
 
 app.use(cors())
 app.use(express.json())
+app.use(responseMiddleware)
+
 if (
    !process.env.STRIPE_SECRET_KEY ||
    !process.env.STRIPE_PUBLISHABLE_KEY 
@@ -29,12 +31,12 @@ app.use("/payment", paymentRouter)
 
 app.get("/", (request, response) => {
    try {
-      responseHttp.success({ response, data: { message: "Stimate APIv1" } })
+      response.success({ message: "Stimate APIv1" })
    } catch (error) {
       const code = error.status
-      const message = error.message
+      const message = error.messages
 
-      responseHttp.error({ response, code, message })
+      response.error({ code, message })
    }
 })
 

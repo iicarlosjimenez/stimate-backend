@@ -35,6 +35,19 @@ function validator(rules, data) {
                   messages.push(`The field ${key} is not a boolean`)
                }
                break;
+            case 'array':
+               if (!Array.isArray(data[key])) {
+                  validated = false;
+                  messages.push(`The field ${key} is not an array`);
+               }
+               break;
+            case 'email':
+               const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+               if (!emailRegex.test(data[key])) {
+                  validated = false;
+                  messages.push(`The field ${key} is not an email`);
+               }
+               break;
             default:
                break;
          }
