@@ -36,7 +36,7 @@ app.get("/", (request, response) => {
       const code = error.status
       const message = error.messages
 
-      response.error({ code, message })
+      response.error(code, message)
    }
 })
 
