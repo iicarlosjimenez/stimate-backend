@@ -1,6 +1,6 @@
 const createError = require("http-errors");
 const Project = require("../models/project.model");
-const validator = require("../lib/validator");
+const validator = require("../libs/validator");
 
 // Create
 async function store(project) {

@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const modelName = "areas";
+const modelName = "projects";
 const schema = new mongoose.Schema({
    owner_id: {
       type: mongoose.Types.ObjectId,
@@ -32,8 +32,7 @@ const schema = new mongoose.Schema({
       },
       work_hours_per_day: {
          type: Number
-      },
-      required: true
+      }
    }],
    features_project: [{
       feature: {
@@ -95,4 +94,4 @@ const schema = new mongoose.Schema({
    }
 });
 
-export default mongoose.model(modelName, schema);
+module.exports = mongoose.model(modelName, schema);

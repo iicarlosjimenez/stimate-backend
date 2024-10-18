@@ -3,6 +3,7 @@ const utils = require("../libs/utils");
 const createError = require("http-errors");
 const validator = require("../libs/validator");
 const { default: slugify } = require("slugify");
+const ProjectUseCase = require("../usecases/projects.usecase")
 
 const router = express.Router();
 const data = require("../example-db-v1.json");
@@ -17,7 +18,7 @@ router.get("/", async (request, response) => {
       }
    })
 
-   response.send(projects);
+   response.success({ projects });
 })
 
 // store
