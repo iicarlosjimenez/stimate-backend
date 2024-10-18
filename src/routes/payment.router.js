@@ -13,6 +13,7 @@ router.post("/customer/create", PaymentUseCase.createCustomer); // customer stor
 router.get("/subscriptions", PaymentUseCase.getSubscriptions); // subscriptions index
 router.post("/subscriptions/customer", PaymentUseCase.getSubscriptionsCustomer); // subscriptions customer index
 router.post("/subscription/create", PaymentUseCase.createSubscription); // subscription store
+router.post("/subscription/cancel", PaymentUseCase.cancelSubscription); // subscription cancel
 router.get("/payments", async (request, response) => {
    try {
       //Buscar transacciones pendientes del usuario
@@ -21,7 +22,7 @@ router.get("/payments", async (request, response) => {
       response.success({ subscriptions })
 
    } catch (error) {
-      response.error({ response, code: error.status, message: error.message })
+      response.error(error.status, error.message )
    }
 })
 
