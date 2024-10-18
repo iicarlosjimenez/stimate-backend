@@ -6,6 +6,7 @@ const app = express()
 
 const projectRouter = require("./routes/project.router")
 const paymentRouter = require("./routes/payment.router")
+const project_status = require("./routes/project_status.router")
 
 app.use(cors())
 app.use(express.json())
@@ -28,6 +29,7 @@ else {
 // Rutas
 app.use("/project", projectRouter)
 app.use("/payment", paymentRouter)
+app.use("/status", project_status)
 
 app.get("/", (request, response) => {
    try {
