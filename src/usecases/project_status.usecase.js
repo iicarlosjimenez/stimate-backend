@@ -1,7 +1,7 @@
 const CreateError = require("../libs/CreateError");
 const validator = require("../libs/validator");
-const project_status = require("../models/project_status.model");
 
+const data = require("../example-db-v1.json")
 class statusUseCase {
     index = async (request, response) => {
         try {
@@ -15,7 +15,7 @@ class statusUseCase {
      }
      getStatus = async (request, response) => {
         try {
-            const status = await project_status.map(status => {
+            const status = data.status.map(status => {
                 return {
                     code: status.code,
                     color: status.color,
