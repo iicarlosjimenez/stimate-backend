@@ -21,6 +21,8 @@ const userSchema = new mongoose.Schema({
   },
 }, {
   timestamps: true 
+},{
+  isGoogleAuth: Boolean
 });
 
 const User = mongoose.model('User', userSchema);

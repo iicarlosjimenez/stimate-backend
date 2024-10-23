@@ -1,13 +1,44 @@
 const express = require('express');
 const router = express.Router();
-const userUsecase = require('../usecases/user.usercase');
+const authMiddleware = require('../middlewares/authMiddleware')
+const userUsecase = require('../usecases/users.usecase');
 
 router.post('/register', async (req, res) => {
+  try {
+    const { name, email, password, isGoogleAuth } = req.body;
+
+    let userData;
+    if (isGoogleAuth) {
+      // Para registro con Google
+      userData = { name, email, isGoogleAuth: true };
+    } else {
+      // Para registro normal
+      userData = { name, email, password, isGoogleAuth: false };
+    }
+
+    const result = await userUsecase.registerUser(userData);
+    res.status(201).json(result);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+/* router.post('/register', async (req, res) => {
   try {
     const result = await userUsecase.registerUser(req.body);
     res.status(201).json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
+  }
+});
+ */
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const result = await userUsecase.loginUser(email, password);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -20,7 +51,7 @@ router.get('/',  async (req, res) => {
   }
 });
 
-router.get('/:id',  async (req, res) => {
+router.get('/:id', authMiddleware, async (req, res) => {
   try {
     const user = await userUsecase.getUserById(req.params.id);
     res.json(user);
@@ -29,7 +60,7 @@ router.get('/:id',  async (req, res) => {
   }
 });
 
-router.put('/:id',  async (req, res) => {
+router.put('/:id', authMiddleware,  async (req, res) => {
   try {
     const user = await userUsecase.updateUser(req.params.id, req.body);
     res.json(user);
@@ -38,7 +69,7 @@ router.put('/:id',  async (req, res) => {
   }
 });
 
-router.delete('/:id',  async (req, res) => {
+router.delete('/:id', authMiddleware, async (req, res) => {
   try {
     const result = await userUsecase.deleteUser(req.params.id);
     res.json(result);
