@@ -31,12 +31,10 @@ const schema = new mongoose.Schema({
         type: Number,
       },
       work_hours_per_day: {
-        type: Number,
-      },
-    },
-  ],
-  features_project: [
-    {
+         type: Number
+      }
+   }],
+   features_project: [{
       feature: {
         type: String,
         required: true,
