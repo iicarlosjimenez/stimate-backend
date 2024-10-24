@@ -12,8 +12,17 @@ async function store(project) {
 
 // Create
 async function create(project) {
-  const newProject = await Project.create(project);
-  return newProject;
+  if (!project.name_project || !project.team_project) {
+    throw new Error("Faltan campos obligatorios");
+  }
+
+  try {
+    const newProject = await Project.create(project);
+    return newProject;
+  } catch (error) {
+    console.error("Error al crear proyecto:", error);
+    throw new Error("No se pudo crear el proyecto");
+  }
 }
 
 // Read
