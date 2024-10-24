@@ -12,7 +12,11 @@ async function store(project) {
 
 // Create
 async function create(project) {
-  if (!project.name_project || !project.team_project) {
+  if (
+    !project.name_project ||
+    !project.team_project ||
+    project.team_project.length === 0
+  ) {
     throw new Error("Faltan campos obligatorios");
   }
 

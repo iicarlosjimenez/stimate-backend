@@ -41,6 +41,9 @@ router.post("/", async (request, response) => {
     const status_project = "pending";
     const type_project = "normal";
     const team_project = areas_selected.map((area) => {
+      if (!area.text || area.text === "") {
+        throw createError(400, "Falta campo obligatorio");
+      }
       return {
         team: area.text,
         hourly_rate: 0,
@@ -55,7 +58,7 @@ router.post("/", async (request, response) => {
       status_project,
     };
     const newProject = await projectUsecase.create(project);
-    response.success({ projects: project });
+    response.success({ project });
   } catch (error) {
     response.error(error.status, error.message);
   }
