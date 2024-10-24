@@ -2,39 +2,83 @@ const createError = require("http-errors");
 const Project = require("../models/project.model");
 const validator = require("../libs/validator");
 
-// Create
+// Create ??
 async function store(project) {
-   // validar datos requeridos y tipo de entrada de datos
-   const projects = await Project.find({});
+  // validar datos requeridos y tipo de entrada de datos
+  const projects = await Project.find({});
 
-   return projects;
+  return projects;
+}
+
+// Create
+async function create(project) {
+  if (
+    !project.name_project ||
+    !project.team_project ||
+    project.team_project.length === 0
+  ) {
+    throw new Error("Faltan campos obligatorios");
+  }
+
+  try {
+    const newProject = await Project.create(project);
+    return newProject;
+  } catch (error) {
+    console.error("Error al crear proyecto:", error);
+    throw new Error("No se pudo crear el proyecto");
+  }
 }
 
 // Read
 async function index() {
-   // Buscar por usuario
-   const projects = await Project.find({});
+  // Buscar por usuario
+  const projects = await Project.find({});
 
-   return projects;
+  return projects;
 }
 
 // Update
 async function update(project) {
-   // validar datos requeridos y tipo de entrada de datos
-   const projects = await Project.find({});
+  // validar datos requeridos y tipo de entrada de datos
+  const projects = await Project.find({});
 
-   return projects;
+  return projects;
+}
+
+// Get All
+async function getAll() {
+  try {
+    const projects = await Project.find();
+    return projects;
+  } catch (error) {
+    console.log("Error fetching posts: ", error);
+    throw error;
+  }
+}
+
+// Get By Slug
+async function getBySlug(slug) {
+  try {
+    const project = await Project.findOne({ slug });
+    return project;
+  } catch (error) {
+    console.log("Error fetching post: ", error);
+    throw error;
+  }
 }
 
 // Delete
 async function destroy(project) {
-   const projects = await Project.find({});
+  const projects = await Project.find({});
 
-   return projects;
+  return projects;
 }
 module.exports = {
-   store,
-   index,
-   update,
-   destroy
+  store,
+  index,
+  update,
+  destroy,
+  getAll,
+  getBySlug,
+  create,
 };
