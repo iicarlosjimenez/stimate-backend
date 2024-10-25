@@ -12,9 +12,11 @@ const schema = new mongoose.Schema({
    translations: {
       es: {
          type: String,
+         required: true
       },
       en: {
          type: String,
+         required: true
       },
    }
 });
