@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const modelName = "areas";
 const schema = new mongoose.Schema({
-   area: {
+   name: { // Cambia 'area' por 'name'
       type: String,
       required: true
    },
@@ -10,4 +10,4 @@ const schema = new mongoose.Schema({
    }
 });
 
-export default mongoose.model(modelName, schema);
+module.exports = mongoose.model(modelName, schema);

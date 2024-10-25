@@ -12,9 +12,8 @@ class statusUseCase {
             response.error({ code, message });
         }
      }
-     CreateStatus = async (request, response) => {
+     create = async (request, response) => {
         try {
-            // Primero validamos la estructura principal
             const mainRules = {
                 code: ["required", "string"],
                 color: ["required", "string"],
@@ -26,7 +25,12 @@ class statusUseCase {
                 throw new CreateError(400, validateMain.messages);
             }
 
-            // Luego validamos las traducciones
+            // Verificar si ya existe un status con ese código
+            const existingStatus = await project_status.findOne({ code: request.body.code });
+            if (existingStatus) {
+                throw new CreateError(400, "A status with this code already exists");
+            }
+
             const translationsRules = {
                 es: ["required", "string"],
                 en: ["required", "string"]
@@ -43,7 +47,6 @@ class statusUseCase {
                 color,
                 translations,
             };
-
             const add = await project_status.create(Status);
             response.success(add);
         } catch (error) {
@@ -53,16 +56,16 @@ class statusUseCase {
             );
         }
     }
-    updateStatus = async (request, response) => {
+    update = async (request, response) => {
         try {
-            const { id } = request.params;
+            const { code } = request.params;
             
-            if (!id) {
-                throw new CreateError(400, "ID is required");
+            if (!code) {
+                throw new CreateError(400, "Code is required");
             }
 
             // Validamos que el status exista
-            const existingStatus = await project_status.findById(id);
+            const existingStatus = await project_status.findOne({ code });
             if (!existingStatus) {
                 throw new CreateError(404, "Status not found");
             }
@@ -79,6 +82,14 @@ class statusUseCase {
                 throw new CreateError(400, validateMain.messages);
             }
 
+            // Si se intenta actualizar el código, verificar que no exista
+            if (request.body.code && request.body.code !== code) {
+                const codeExists = await project_status.findOne({ code: request.body.code });
+                if (codeExists) {
+                    throw new CreateError(400, "A status with this code already exists");
+                }
+            }
+
             // Si vienen traducciones, las validamos
             if (request.body.translations) {
                 const translationsRules = {
@@ -92,10 +103,10 @@ class statusUseCase {
                 }
             }
 
-            const updatedStatus = await project_status.findByIdAndUpdate(
-                id,
+            const updatedStatus = await project_status.findOneAndUpdate(
+                { code },
                 request.body,
-                { new: true } // Esto hace que retorne el documento actualizado
+                { new: true }
             );
 
             response.success(updatedStatus);
@@ -105,22 +116,23 @@ class statusUseCase {
                 error.messages || error.message || "Failed to update status"
             );
         }
-    };
-    deleteStatus = async (request, response) => {
+    }
+
+    delete = async (request, response) => {
         try {
-            const { id } = request.params;
+            const { code } = request.params;
             
-            if (!id) {
-                throw new CreateError(400, "ID is required");
+            if (!code) {
+                throw new CreateError(400, "Code is required");
             }
 
             // Verificamos que el status exista
-            const existingStatus = await project_status.findById(id);
+            const existingStatus = await project_status.findOne({ code });
             if (!existingStatus) {
                 throw new CreateError(404, "Status not found");
             }
 
-            await project_status.findByIdAndDelete(id);
+            await project_status.findOneAndDelete({ code });
             
             response.success({ message: "Status deleted successfully" });
         } catch (error) {
@@ -129,16 +141,16 @@ class statusUseCase {
                 error.messages || error.message || "Failed to delete status"
             );
         }
-    };
-    getOneStatus = async (request, response) => {
+    }
+    show = async (request, response) => {
         try {
-            const { id } = request.params;
+            const { code } = request.params;
             
-            if (!id) {
-                throw new CreateError(400, "ID is required");
+            if (!code) {
+                throw new CreateError(400, "Code is required");
             }
 
-            const status = await project_status.findById(id);
+            const status = await project_status.findOne({ code });
             
             if (!status) {
                 throw new CreateError(404, "Status not found");
@@ -151,7 +163,7 @@ class statusUseCase {
                 error.messages || error.message || "Error retrieving status"
             );
         }
-    };
+    }
 
 }
 

@@ -7,6 +7,8 @@ const app = express()
 const projectRouter = require("./routes/project.router")
 const paymentRouter = require("./routes/payment.router")
 const project_status = require("./routes/project_status.router")
+const type_recurring = require("./routes/type_recurring.router")
+const area = require("./routes/area.router")
 
 app.use(cors())
 app.use(express.json())
@@ -30,6 +32,8 @@ else {
 app.use("/project", projectRouter)
 app.use("/payment", paymentRouter)
 app.use("/status", project_status)
+app.use("/type_recurring", type_recurring)
+app.use("/area", area)
 
 app.get("/", (request, response) => {
    try {

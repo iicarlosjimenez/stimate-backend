@@ -1,12 +1,12 @@
 const express = require("express");
-const types_recurring = require("../usecases/type_recurring.usecase")
+const type_recurringUseCase = require("../usecases/type_recurring.usecase")
 
 const router = express.Router();
 
-router.get("/", statusUseCase.index);
-router.get("/:id", statusUseCase.getOneStatus);
-router.post("/", statusUseCase.CreateStatus);
-router.put("/:id", statusUseCase.updateStatus);
-router.delete("/:id", statusUseCase.deleteStatus);
+router.get("/", type_recurringUseCase.index);
+router.get("/:code", type_recurringUseCase.show);
+router.post("/", type_recurringUseCase.create);
+router.put("/:code", type_recurringUseCase.update);
+router.delete("/:code", type_recurringUseCase.delete);
 
 module.exports = router;

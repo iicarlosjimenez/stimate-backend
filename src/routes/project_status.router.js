@@ -4,9 +4,9 @@ const statusUseCase = require("../usecases/project_status.usecase")
 const router = express.Router();
 
 router.get("/", statusUseCase.index);
-router.get("/:id", statusUseCase.getOneStatus);
-router.post("/", statusUseCase.CreateStatus);
-router.put("/:id", statusUseCase.updateStatus);
-router.delete("/:id", statusUseCase.deleteStatus);
+router.get("/:code", statusUseCase.show);
+router.post("/", statusUseCase.create);
+router.put("/:code", statusUseCase.update);
+router.delete("/:code", statusUseCase.delete);
 
 module.exports = router;
