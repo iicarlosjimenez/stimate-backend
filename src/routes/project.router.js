@@ -75,4 +75,16 @@ router.get("/:slug", async (request, response) => {
   }
 });
 
+//delete
+router.delete("/:slug", async (request, response) => {
+  try {
+    const { slug } = request.params;
+    const project = await projectUsecase.destroy(slug);
+    response.success({ project: project });
+  } catch (error) {
+    response.error(error.status, error.message);
+    console.log(error);
+  }
+});
+
 module.exports = router;
