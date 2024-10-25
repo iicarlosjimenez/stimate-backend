@@ -10,4 +10,4 @@ const schema = new mongoose.Schema({
    }
 });
 
-export default mongoose.model(modelName, schema);
+module.exports = mongoose.model(modelName, schema);

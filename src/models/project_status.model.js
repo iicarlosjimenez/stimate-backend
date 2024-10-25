@@ -11,13 +11,14 @@ const schema = new mongoose.Schema({
    },
    translations: {
       es: {
-         type: String
+         type: String,
+         required: true
       },
       en: {
-         type: String
+         type: String,
+         required: true
       },
-      required: true
    }
 });
 
-export default mongoose.model(modelName, schema);
+module.exports = mongoose.model(modelName, schema);
