@@ -17,7 +17,7 @@ class AreaUseCase {
     create = async (request, response) => {
         try {
             const mainRules = {
-                name: ["required", "string"],
+                area: ["required", "string"],
             };
 
             const validateMain = validator(mainRules, request.body);
@@ -25,14 +25,14 @@ class AreaUseCase {
                 throw new CreateError(400, validateMain.messages);
             }
 
-            const existingArea = await areas.findOne({ name: request.body.name });
+            const existingArea = await areas.findOne({ area: request.body.area });
             if (existingArea) {
                 throw new CreateError(400, "An area with this name already exists");
             }
 
-            const { name } = request.body;
+            const { area } = request.body;
             const NewArea = {
-                name
+                area
             }
             const CreateArea = await areas.create(NewArea);
             response.success(CreateArea);
@@ -58,7 +58,7 @@ class AreaUseCase {
             }
 
             const mainRules = {
-                name: ["string"]
+                area: ["string"]
             };
 
             const validateMain = validator(mainRules, request.body);
@@ -66,9 +66,9 @@ class AreaUseCase {
                 throw new CreateError(400, validateMain.messages);
             }
 
-            if (request.body.name) {
+            if (request.body.area) {
                 const existingName = await areas.findOne({ 
-                    name: request.body.name,
+                    area: request.body.area,
                     _id: { $ne: id }
                 });
                 if (existingName) {

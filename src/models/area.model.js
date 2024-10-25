@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const modelName = "areas";
 const schema = new mongoose.Schema({
-   name: { // Cambia 'area' por 'name'
+   area: {
       type: String,
       required: true
    },
