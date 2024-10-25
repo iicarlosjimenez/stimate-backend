@@ -1,5 +1,6 @@
 const CreateError = require("../libs/CreateError");
 const validator = require("../libs/validator");
+const project_status  = require("../models/project_status.model")
 
 const data = require("../example-db-v1.json")
 class statusUseCase {
@@ -15,14 +16,7 @@ class statusUseCase {
      }
      getStatus = async (request, response) => {
         try {
-            const status = data.status.map(status => {
-                return {
-                    code: status.code,
-                    color: status.color,
-                    translation: status.translations
-                }
-            }
-        )
+            const status = await project_status.find()
            response.success(status)
         } catch (error) {
            response.error({ code: error.status, message: error.messages });
@@ -50,7 +44,8 @@ class statusUseCase {
                 color,
                 translations
             }
-            response.send(Status)
+            const add = await project_status.create(Status)
+            response.send(add)
         } catch (error) {
            response.error({ code: error.status, message: error.messages });
         }
