@@ -181,13 +181,14 @@ class PaymentUseCase {
       
          const { customer } = request.body
          const subscriptions = await stripe.subscriptions.list({
+            status: "active",
             customer,
             expand: ["data.plan.product"]
          });
 
          response.success({ subscriptions: subscriptions.data })
       } catch (error) {
-         response.error(error.status, error.messages)
+         response.error(error.status, error.message)
       }
    }
    
@@ -211,8 +212,11 @@ class PaymentUseCase {
             payment_behavior: "default_incomplete",
             expand: ["latest_invoice.payment_intent"],
          });
-         
-         response.success({ subscription })
+
+         response.success({
+            subscriptionId: subscription.id,
+            clientSecret: subscription.latest_invoice.payment_intent.client_secret
+         })
       } catch (error) {
          response.error(error.status, error.messages)
       }
