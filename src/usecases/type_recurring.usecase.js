@@ -86,7 +86,6 @@ class type_recurringUseCase {
                     throw new CreateError(400, "A type with this code already exists");
                 }
             }
-status
             // Si vienen traducciones, las validamos
             if (request.body.translations) {
                 const translationsRules = {
