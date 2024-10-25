@@ -68,10 +68,14 @@ async function getBySlug(slug) {
 }
 
 // Delete
-async function destroy(project) {
-  const projects = await Project.find({});
-
-  return projects;
+async function destroy(slug) {
+  try {
+    const projectDeleted = await Project.findOneAndDelete({ slug });
+    return projectDeleted;
+  } catch (error) {
+    console.log("Error fetching post: ", error);
+    throw error;
+  }
 }
 module.exports = {
   store,
