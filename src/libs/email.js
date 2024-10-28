@@ -11,12 +11,12 @@ const transporter = nodemailer.createTransport({
       user: process.env.MAIL_USERNAME,
       pass: process.env.MAIL_PASSWORD
    },
-   debug: true, // Habilita logs detallados
-   logger: true // Habilita logging
+   // debug: true, // Habilita logs detallados
+   // logger: true // Habilita logging
 });
 
 // Función de utilidad para enviar correos
-const sendEmail = async ({ to, subject, text, html }) => {
+const sendEmail = async ({ to, cc, bcc, subject, text, html }) => {
    if (!to || !subject || (!text && !html)) {
       throw new CreateError(500, 'Faltan campos requeridos (to, subject, y text o html)');
    }
@@ -30,14 +30,16 @@ const sendEmail = async ({ to, subject, text, html }) => {
             name: 'Stimate',
             address: process.env.MAIL_USERNAME
          },
-         to: to,
-         subject: subject,
+         to,
+         cc,
+         bcc,
+         subject,
          text: text || '',
          html: html || '',
          headers: {
-            'X-Priority': '1', // Alta prioridad
-            'X-MSMail-Priority': 'High',
-            'Importance': 'high',
+            // 'X-Priority': '1', // Alta prioridad
+            // 'X-MSMail-Priority': 'High',
+            // 'Importance': 'high',
             'List-Unsubscribe': `<mailto:${process.env.MAIL_USERNAME}?subject=unsubscribe>`,
             'Message-ID': `<${Date.now()}@kodinc.dev>`
          },
@@ -46,7 +48,7 @@ const sendEmail = async ({ to, subject, text, html }) => {
             to: to
          },
          encoding: 'utf-8',
-         priority: 'high'
+         // priority: 'high'
       };
 
       const messageId = `<${Date.now()}-${Math.random().toString(36).substring(2, 15)}@kodinc.dev>`;
