@@ -17,6 +17,21 @@ router.get("/", async (request, response) => {
   }
 });
 
+// update
+router.patch("/:slug", async (request, response) => {
+  try {
+    const { slug } = request.params;
+    const newProject = request.body;
+    const projectUpdated = await projectUsecase.update(slug, newProject);
+    response.json({
+      success: true,
+      data: projectUpdated,
+    });
+  } catch (error) {
+    response.error(error.status, error.message);
+  }
+});
+
 // store
 router.post("/", async (request, response) => {
   try {
