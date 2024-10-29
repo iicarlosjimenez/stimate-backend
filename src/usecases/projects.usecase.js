@@ -77,6 +77,22 @@ async function destroy(slug) {
     throw error;
   }
 }
+
+// Update
+async function update(slug, newProject) {
+  try {
+    const updatedProject = await Project.findOneAndUpdate(
+      { slug },
+      newProject,
+      { new: true }
+    );
+    return updatedProject;
+  } catch (error) {
+    console.log("Error fetching post: ", error);
+    throw error;
+  }
+}
+
 module.exports = {
   store,
   index,
