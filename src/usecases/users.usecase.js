@@ -4,73 +4,27 @@ const User = require('../models/User.model');
 
 const registerUser = async (userData) => {
   const { name, email, password, isGoogleAuth } = userData;
-  
-  // Verificar si el usuario ya existe
+
   let user = await User.findOne({ email });
   if (user) {
     throw new Error('El usuario ya existe');
   }
 
-  // Crear nuevo usuario
-  user = new User({
-    name,
-    email,
-    isGoogleAuth: !!isGoogleAuth,
-  });
-
-  // Si no es autenticación de Google, hashear la contraseña
-  if (!isGoogleAuth) {
-    if (!password) {
-      throw new Error('La contraseña es requerida para el registro normal');
-    }
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
+  let hashedPassword = null;
+  if (!isGoogleAuth && password) {
+      const salt = await bcrypt.genSalt(10);
+      hashedPassword = await bcrypt.hash(password, salt);
   }
-
-  await user.save();
-
-  // Generar el token JWT
-  const token = jwt.sign(
-    { id: user.id, email: user.email },
-    process.env.JWT_SECRET,
-    { expiresIn: '1h' }
-  );
-
-  return { 
-    message: 'Usuario creado exitosamente',
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      isGoogleAuth: user.isGoogleAuth
-    },
-    token 
-  };
-};
-
-/* const registerUser = async (userData) => {
-  const { name, email, password } = userData;
-
-  // Verificar si el usuario ya existe
-  let user = await User.findOne({ email });
-  if (user) {
-    throw new Error('El usuario ya existe');
-  }
-
-  // Hashear la contraseña
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(password, salt);
-
-  // Crear nuevo usuario
+ 
   user = new User({
-    name,
+    name: name,
     email,
     password: hashedPassword,
-  });
+    isGoogleAuth: isGoogleAuth || false
+});
 
-  await user.save();
+    await user.save();
 
-  // Generar el token JWT
   const token = jwt.sign(
     { id: user.id, email: user.email },
     process.env.JWT_SECRET,
@@ -78,7 +32,7 @@ const registerUser = async (userData) => {
   );
 
   return { 
-    message: 'Usuario creado exitosamente',
+    message: 'Usuario creado exitosamente.',
     user: {
       id: user.id,
       name: user.name,
@@ -86,7 +40,7 @@ const registerUser = async (userData) => {
     },
     token 
   };
-}; */
+};
 
 const loginUser = async (email, password) => {
   const user = await User.findOne({ email });

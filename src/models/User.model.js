@@ -11,18 +11,20 @@ const userSchema = new mongoose.Schema({
     unique: true
   },
   password: {
-    type: String,
- 
+    type: String
   },
   customer_ids: {
     stripe: {
       type: String
     }
   },
-}, {
+  isGoogleAuth: {
+    type: Boolean,
+    default: false
+  }
+},
+ {
   timestamps: true 
-},{
-  isGoogleAuth: Boolean
 });
 
 const User = mongoose.model('User', userSchema);

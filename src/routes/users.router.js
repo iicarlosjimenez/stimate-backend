@@ -9,10 +9,8 @@ router.post('/register', async (req, res) => {
 
     let userData;
     if (isGoogleAuth) {
-      // Para registro con Google
       userData = { name, email, isGoogleAuth: true };
     } else {
-      // Para registro normal
       userData = { name, email, password, isGoogleAuth: false };
     }
 
@@ -23,15 +21,6 @@ router.post('/register', async (req, res) => {
   }
 });
 
-/* router.post('/register', async (req, res) => {
-  try {
-    const result = await userUsecase.registerUser(req.body);
-    res.status(201).json(result);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
- */
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -42,7 +31,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.get('/',  async (req, res) => {
+router.get('/', authMiddleware, async (req, res) => {
   try {
     const users = await userUsecase.getAllUsers();
     res.json(users);
@@ -51,7 +40,7 @@ router.get('/',  async (req, res) => {
   }
 });
 
-router.get('/:id', authMiddleware, async (req, res) => {
+router.get('/:id', authMiddleware,  async (req, res) => {
   try {
     const user = await userUsecase.getUserById(req.params.id);
     res.json(user);
