@@ -7,6 +7,9 @@ const app = express()
 
 const projectRouter = require("./routes/project.router")
 const paymentRouter = require("./routes/payment.router")
+const project_status = require("./routes/project_status.router")
+const type_recurring = require("./routes/type_recurring.router")
+const area = require("./routes/area.router")
 
 app.use(cors())
 app.use(express.json())
@@ -19,7 +22,6 @@ if (
    console.log(
       "The .env file is not configured. Follow the instructions in the readme to configure the .env file. https://github.com/stripe-samples/subscription-use-cases"
    );
-   console.log("");
 } 
 else {
    console.log("Stripe environments, OK!");
@@ -30,6 +32,9 @@ else {
 app.use("/project", projectRouter)
 app.use("/payment", paymentRouter)
 app.use('/users', usersRouter)
+app.use("/status", project_status)
+app.use("/type_recurring", type_recurring)
+app.use("/area", area)
 
 app.get("/", (request, response) => {
    try {
@@ -38,7 +43,7 @@ app.get("/", (request, response) => {
       const code = error.status
       const message = error.messages
 
-      response.error({ code, message })
+      response.error(code, message)
    }
 })
 

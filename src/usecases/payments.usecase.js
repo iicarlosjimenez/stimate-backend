@@ -16,7 +16,7 @@ class PaymentUseCase {
          const code = error.status
          const message = error.messages
    
-         response.error({ code, message })
+         response.error(code, message)
       }
    }
    
@@ -31,7 +31,7 @@ class PaymentUseCase {
    
          response.success(data)
       } catch (error) {
-         response.error({ code: error.status, message: error.messages });
+         response.error(error.status, error.messages);
       }
    }
    
@@ -42,7 +42,7 @@ class PaymentUseCase {
    
          response.success({ products: products.data })
       } catch (error) {
-         response.error({ code: error.status, message: error.messages })
+         response.error(error.status, error.messages)
       }
    }
    
@@ -86,7 +86,7 @@ class PaymentUseCase {
    
          response.success({ product, price })
       } catch (error) {
-         response.error({ code: error.status, message: error.messages })
+         response.error(error.status, error.messages)
       }
    }
    
@@ -98,7 +98,7 @@ class PaymentUseCase {
    
          response.success({ customers })
       } catch (error) {
-         response.error({ code: error.status, message: error.messages })
+         response.error(error.status, error.messages)
       }
    }
    
@@ -120,7 +120,7 @@ class PaymentUseCase {
    
          response.success({ customer: customers.data[0] })
       } catch (error) {
-         response.error({ code: error.status, message: error.messages })
+         response.error(error.status, error.messages)
       }
    }
    
@@ -153,7 +153,7 @@ class PaymentUseCase {
    
          response.success({customer})
       } catch (error) {
-         response.error({ code: error.status, message: error.messages })
+         response.error(error.status, error.messages)
       }
    }
    
@@ -164,7 +164,7 @@ class PaymentUseCase {
 
          response.success({ subscriptions: subscriptions.data })
       } catch (error) {
-         response.error({ code: error.status, message: error.messages })
+         response.error(error.status, error.messages)
       }
    }
    
@@ -181,13 +181,14 @@ class PaymentUseCase {
       
          const { customer } = request.body
          const subscriptions = await stripe.subscriptions.list({
+            status: "active",
             customer,
-            expand: ['data.plan.product']
+            expand: ["data.plan.product"]
          });
 
          response.success({ subscriptions: subscriptions.data })
       } catch (error) {
-         response.error({ code: error.status, message: error.messages })
+         response.error(error.status, error.message)
       }
    }
    
@@ -200,7 +201,7 @@ class PaymentUseCase {
          const validate = validator(rules, request.body);
       
          if (!validate.validated) {
-            return response.error({ response, code: 400, message: validate.messages })
+            return response.error(400, validate.messages)
          }
       
          const { customer, price } = request.body
@@ -211,10 +212,34 @@ class PaymentUseCase {
             payment_behavior: "default_incomplete",
             expand: ["latest_invoice.payment_intent"],
          });
-         
+
+         response.success({
+            subscriptionId: subscription.id,
+            clientSecret: subscription.latest_invoice.payment_intent.client_secret
+         })
+      } catch (error) {
+         response.error(error.status, error.messages)
+      }
+   }
+
+   cancelSubscription = async (request, response) => {
+      try {
+         const rules = {
+            subscriptionId: ["required", "string"]
+         };
+         const validate = validator(rules, request.body);
+
+         if (!validate.validated) {
+            return response.error(400, validate.messages)
+         }
+
+         const { subscriptionId } = request.body
+
+         const subscription = await stripe.subscriptions.cancel(subscriptionId);
+
          response.success({ subscription })
       } catch (error) {
-         response.error({ code: error.status, message: error.messages })
+         response.error(error.status, error.messages)
       }
    }
 
