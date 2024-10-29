@@ -6,12 +6,11 @@ const { default: slugify } = require("slugify");
 const projectUsecase = require("../usecases/projects.usecase");
 
 const router = express.Router();
-const data = require("../example-db-v1.json");
 
 router.get("/", async (request, response) => {
   try {
     const projects = await projectUsecase.getAll();
-    response.success({ projects: projects });
+    response.success({ projects });
   } catch (error) {
     response.error(error.status, error.message);
   }
@@ -22,11 +21,8 @@ router.patch("/:slug", async (request, response) => {
   try {
     const { slug } = request.params;
     const newProject = request.body;
-    const projectUpdated = await projectUsecase.update(slug, newProject);
-    response.json({
-      success: true,
-      data: projectUpdated,
-    });
+    const project = await projectUsecase.update(slug, newProject);
+    response.success({ project });
   } catch (error) {
     response.error(error.status, error.message);
   }
@@ -84,7 +80,7 @@ router.get("/:slug", async (request, response) => {
   try {
     const { slug } = request.params;
     const project = await projectUsecase.getBySlug(slug);
-    response.success({ project: project });
+    response.success({ project });
   } catch (error) {
     response.error(error.status, error.message);
   }
@@ -95,7 +91,7 @@ router.delete("/:slug", async (request, response) => {
   try {
     const { slug } = request.params;
     const project = await projectUsecase.destroy(slug);
-    response.success({ project: project });
+    response.success({ project });
   } catch (error) {
     response.error(error.status, error.message);
     console.log(error);
