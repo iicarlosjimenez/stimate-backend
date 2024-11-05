@@ -1,5 +1,6 @@
-const express = require("express")
-const cors = require("cors")
+const cors = require('cors')
+const express = require('express')
+const usersRouter = require('./routes/users.router')
 const responseMiddleware = require("./middlewares/responseHttp");
 
 const app = express()
@@ -21,7 +22,6 @@ if (
    console.log(
       "The .env file is not configured. Follow the instructions in the readme to configure the .env file. https://github.com/stripe-samples/subscription-use-cases"
    );
-   console.log("");
 } 
 else {
    console.log("Stripe environments, OK!");
@@ -31,6 +31,7 @@ else {
 // Rutas
 app.use("/project", projectRouter)
 app.use("/payment", paymentRouter)
+app.use('/users', usersRouter)
 app.use("/status", project_status)
 app.use("/type_recurring", type_recurring)
 app.use("/area", area)
