@@ -32,15 +32,16 @@ router.patch("/:slug", async (request, response) => {
 router.post("/", async (request, response) => {
   try {
     const rules = {
+      owner_id: ["required"],
       name_project: ["required"],
       areas_selected: ["required"],
     };
     const validate = validator(rules, request.body);
 
     if (!validate.validated)
-      throw createError(400, JSON.stringify(validate.messages));
+      return response.error(400, validate.messages);
 
-    const { name_project, areas_selected } = request.body;
+    const { name_project, areas_selected, owner_id } = request.body;
     const code = await utils.generateCode({
       length: 6,
       options: ["letters", "caps", "numbers"],
@@ -62,6 +63,7 @@ router.post("/", async (request, response) => {
       };
     });
     const project = {
+      owner_id,
       slug,
       name_project,
       team_project,

@@ -3,6 +3,7 @@ const modelName = "projects";
 const schema = new mongoose.Schema({
   owner_id: {
     type: mongoose.Types.ObjectId,
+    ref: "User"
   },
   slug: {
     type: String,
@@ -86,11 +87,11 @@ const schema = new mongoose.Schema({
     },
   ],
   sale_comission: {
-    type: mongoose.Types.Decimal128,
+    type: Number,
     default: 0,
   },
   profit: {
-    type: mongoose.Types.Decimal128,
+    type: Number,
   },
   tax: {
     type: Number,
