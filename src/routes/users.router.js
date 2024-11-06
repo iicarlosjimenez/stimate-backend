@@ -14,7 +14,7 @@ router.post('/register', async (req, res) => {
       userData = { name, email, password, isGoogleAuth: false };
     }
 
-    const result = await userUsecase.registerUser(userData);
+    const result = await userUsecase.registerUser(req.body);
     res.status(201).json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });

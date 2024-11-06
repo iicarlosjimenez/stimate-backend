@@ -3,27 +3,31 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User.model');
 
 const registerUser = async (userData) => {
-  const { name, email, password, isGoogleAuth } = userData;
+  const { name, email, password, isGoogleAuth, provider } = userData;
+  const isProvider = provider != 'credentials'
 
   let user = await User.findOne({ email });
-  if (user) {
+  if (user && !isProvider) {
     throw new Error('El usuario ya existe');
   }
 
   let hashedPassword = null;
-  if (!isGoogleAuth && password) {
-      const salt = await bcrypt.genSalt(10);
-      hashedPassword = await bcrypt.hash(password, salt);
+  if (!isProvider && password) {
+    const salt = await bcrypt.genSalt(10);
+    hashedPassword = await bcrypt.hash(password, salt);
   }
- 
-  user = new User({
-    name: name,
-    email,
-    password: hashedPassword,
-    isGoogleAuth: isGoogleAuth || false
-});
+  
+  if (!user) {
+    user = new User({
+      name,
+      email,
+      password: hashedPassword,
+      isGoogleAuth: isGoogleAuth || false
+    });
+  
+    await user.save();  
+  }
 
-    await user.save();
 
   const token = jwt.sign(
     { id: user.id, email: user.email },
@@ -31,14 +35,9 @@ const registerUser = async (userData) => {
     { expiresIn: '1h' }
   );
 
-  return { 
-    message: 'Usuario creado exitosamente.',
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email
-    },
-    token 
+  return {
+    user,
+    token
   };
 };
 
@@ -59,13 +58,13 @@ const loginUser = async (email, password) => {
     { expiresIn: '1h' }
   );
 
-  return { 
+  return {
     user: {
       id: user.id,
       name: user.name,
       email: user.email
     },
-    token 
+    token
   };
 };
 
