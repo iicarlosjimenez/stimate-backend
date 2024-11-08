@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User.model');
 
 const registerUser = async (userData) => {
-  const { name, email, password, isGoogleAuth, provider } = userData;
+  const { name, email, password, provider } = userData;
   const isProvider = provider != 'credentials'
 
   let user = await User.findOne({ email });
@@ -16,23 +16,27 @@ const registerUser = async (userData) => {
     const salt = await bcrypt.genSalt(10);
     hashedPassword = await bcrypt.hash(password, salt);
   }
-  
+
   if (!user) {
     user = new User({
       name,
       email,
-      password: hashedPassword,
-      isGoogleAuth: isGoogleAuth || false
+      password: hashedPassword
     });
-  
-    await user.save();  
+
+    await user.save();
   }
 
 
   const token = jwt.sign(
-    { id: user.id, email: user.email },
+    {
+      id: user.id,
+      email: user.email
+    },
     process.env.JWT_SECRET,
-    { expiresIn: '1h' }
+    {
+      expiresIn: '1h'
+    }
   );
 
   return {
@@ -59,11 +63,7 @@ const loginUser = async (email, password) => {
   );
 
   return {
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email
-    },
+    user,
     token
   };
 };

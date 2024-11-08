@@ -5,15 +5,6 @@ const userUsecase = require('../usecases/users.usecase');
 
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, isGoogleAuth } = req.body;
-
-    let userData;
-    if (isGoogleAuth) {
-      userData = { name, email, isGoogleAuth: true };
-    } else {
-      userData = { name, email, password, isGoogleAuth: false };
-    }
-
     const result = await userUsecase.registerUser(req.body);
     res.status(201).json(result);
   } catch (error) {
