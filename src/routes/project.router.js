@@ -4,12 +4,13 @@ const createError = require("http-errors");
 const validator = require("../libs/validator");
 const { default: slugify } = require("slugify");
 const projectUsecase = require("../usecases/projects.usecase");
+const auth = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
-router.get("/", async (request, response) => {
+router.get("/", auth, async (request, response) => {
   try {
-    const projects = await projectUsecase.getAll();
+    const projects = await projectUsecase.getAll(request.user);
     response.success({ projects });
   } catch (error) {
     response.error(error.status, error.message);
@@ -96,7 +97,7 @@ router.delete("/:slug", async (request, response) => {
     response.success({ project });
   } catch (error) {
     response.error(error.status, error.message);
-    console.log(error);
+    console.error(error);
   }
 });
 

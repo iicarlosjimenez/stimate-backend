@@ -19,12 +19,12 @@ if (
    !process.env.STRIPE_SECRET_KEY ||
    !process.env.STRIPE_PUBLISHABLE_KEY 
 ) {
-   console.log(
+   console.error(
       "The .env file is not configured. Follow the instructions in the readme to configure the .env file. https://github.com/stripe-samples/subscription-use-cases"
    );
 } 
 else {
-   console.log("Stripe environments, OK!");
+   console.error("Stripe environments, OK!");
    
 }
 

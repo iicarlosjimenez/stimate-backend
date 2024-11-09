@@ -46,12 +46,12 @@ async function update(project) {
 }
 
 // Get All
-async function getAll() {
+async function getAll(user) {
   try {
-    const projects = await Project.find();
+    const projects = await Project.find({owner_id: user.id});
     return projects;
   } catch (error) {
-    console.log("Error fetching posts: ", error);
+    console.error("Error fetching posts: ", error);
     throw error;
   }
 }
@@ -62,7 +62,7 @@ async function getBySlug(slug) {
     const project = await Project.findOne({ slug });
     return project;
   } catch (error) {
-    console.log("Error fetching post: ", error);
+    console.error("Error fetching post: ", error);
     throw error;
   }
 }
@@ -73,7 +73,7 @@ async function destroy(slug) {
     const projectDeleted = await Project.findOneAndDelete({ slug });
     return projectDeleted;
   } catch (error) {
-    console.log("Error fetching post: ", error);
+    console.error("Error fetching post: ", error);
     throw error;
   }
 }
@@ -88,7 +88,7 @@ async function update(slug, newProject) {
     );
     return updatedProject;
   } catch (error) {
-    console.log("Error fetching post: ", error);
+    console.error("Error fetching post: ", error);
     throw error;
   }
 }
