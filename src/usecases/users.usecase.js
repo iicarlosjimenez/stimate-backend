@@ -18,12 +18,16 @@ const registerUser = async (userData) => {
   }
 
   if (!user) {
+    // const token_verification = ... no sé como se tenga que generar un token para correo
+
     user = new User({
       name,
       email,
       password: hashedPassword
+      // token_verification, // hasta este punto, hay que almacenarle un 
     });
 
+    // TODO: aquí se debe usar el sendEmail()
     await user.save();
   }
 
@@ -72,6 +76,12 @@ const getAllUsers = async () => {
   return await User.find();
 };
 
+const showUserByEmail = async (email) => {
+  const user = await User.findOne({ email });
+  
+  return user
+}
+
 const getUserById = async (userId) => {
   const user = await User.findById(userId);
   if (!user) {
@@ -100,6 +110,7 @@ module.exports = {
   registerUser,
   loginUser,
   getAllUsers,
+  showUserByEmail,
   getUserById,
   updateUser,
   deleteUser,
