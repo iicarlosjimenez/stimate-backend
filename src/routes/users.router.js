@@ -31,6 +31,17 @@ router.get('/', authMiddleware, async (req, res) => {
   }
 });
 
+router.post('/verificacion', async (request, response) => {
+  try {
+     const { token } = request.body;
+     const { status, message } = await userUsecase.verifyToken(token);
+     response.success({ status, message });
+  }
+catch (error) {
+     response.error(error.status || 500, error.message)
+  }
+});
+
 router.get('/:id', authMiddleware,  async (req, res) => {
   try {
     const user = await userUsecase.getUserById(req.params.id);

@@ -48,22 +48,4 @@ app.get("/", (request, response) => {
    }
 })
 
-app.post('/send-email', async (request, response) => {
-   // NO se requiere una ruta, esto solo es de ejemplo, de como utilizar sendEmail() 
-   // Dirigite a users.usecase.js:21
-   try {
-      const to = request.body.email;
-      const subject = "Stimate - Verificación de correo"
-      const html = `<button style="background: blue;">Verificar correo</button>`
-      const result = await sendEmail({
-         to,
-         subject,
-         html: html || ''
-      });
-      response.success({ ...result });
-   } catch (error) {
-      response.error(error.status || 500, error.message)
-   }
-});
-
 module.exports = app

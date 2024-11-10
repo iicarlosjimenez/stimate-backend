@@ -21,7 +21,11 @@ const userSchema = new mongoose.Schema({
   isGoogleAuth: {
     type: Boolean,
     default: false
-  }
+  },
+  isVerified: {
+    type: Boolean,
+    default: false
+},
 },
  {
   timestamps: true 
