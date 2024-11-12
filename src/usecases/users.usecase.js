@@ -74,6 +74,8 @@ const loginUser = async (email, password) => {
     throw new Error('Contraseña incorrecta');
   }
 
+  const isPlanActive = false // TODO: buscar en payment
+
   const token = jwt.sign(
     { id: user.id, email: user.email },
     process.env.JWT_SECRET,
@@ -81,8 +83,12 @@ const loginUser = async (email, password) => {
   );
 
   return {
-    user,
-    token
+    id: user.id, 
+    name: user.name,
+    email: user.email,
+    customer_ids: user.customer_ids,
+    token,
+    isPlanActive
   };
 };
 
