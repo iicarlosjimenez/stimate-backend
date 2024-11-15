@@ -37,14 +37,6 @@ async function index() {
   return projects;
 }
 
-// Update
-async function update(project) {
-  // validar datos requeridos y tipo de entrada de datos
-  const projects = await Project.find({});
-
-  return projects;
-}
-
 // Get All
 async function getAll(user) {
   try {
@@ -57,9 +49,9 @@ async function getAll(user) {
 }
 
 // Get By Slug
-async function getBySlug(slug) {
+async function getBySlug(userId, slug) {
   try {
-    const project = await Project.findOne({ slug });
+    const project = await Project.findOne({ slug, owner_id: userId  });
     return project;
   } catch (error) {
     console.error("Error fetching post: ", error);
@@ -68,9 +60,12 @@ async function getBySlug(slug) {
 }
 
 // Delete
-async function destroy(slug) {
+async function destroy(userId, slug) {
   try {
-    const projectDeleted = await Project.findOneAndDelete({ slug });
+    const projectDeleted = await Project.findOneAndDelete({ 
+      slug,
+      owner_id: userId
+     });
     return projectDeleted;
   } catch (error) {
     console.error("Error fetching post: ", error);
@@ -79,10 +74,10 @@ async function destroy(slug) {
 }
 
 // Update
-async function update(slug, newProject) {
+async function update(userId, slug, newProject) {
   try {
     const updatedProject = await Project.findOneAndUpdate(
-      { slug },
+      { slug, owner_id: userId  },
       newProject,
       { new: true }
     );

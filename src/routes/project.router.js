@@ -8,7 +8,9 @@ const auth = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
-router.get("/", auth, async (request, response) => {
+router.use(auth)
+
+router.get("/", async (request, response) => {
   try {
     const projects = await projectUsecase.getAll(request.user);
     response.success({ projects });
@@ -22,7 +24,7 @@ router.patch("/:slug", async (request, response) => {
   try {
     const { slug } = request.params;
     const newProject = request.body;
-    const project = await projectUsecase.update(slug, newProject);
+    const project = await projectUsecase.update(request.user.id, slug, newProject);
     response.success({ project });
   } catch (error) {
     response.error(error.status, error.message);
@@ -64,6 +66,7 @@ router.post("/", async (request, response) => {
       };
     });
     const project = {
+      //owner_id:request.user.id
       owner_id,
       slug,
       name_project,
@@ -82,7 +85,7 @@ router.post("/", async (request, response) => {
 router.get("/:slug", async (request, response) => {
   try {
     const { slug } = request.params;
-    const project = await projectUsecase.getBySlug(slug);
+    const project = await projectUsecase.getBySlug(request.user.id, slug);
     response.success({ project });
   } catch (error) {
     response.error(error.status, error.message);
@@ -93,7 +96,7 @@ router.get("/:slug", async (request, response) => {
 router.delete("/:slug", async (request, response) => {
   try {
     const { slug } = request.params;
-    const project = await projectUsecase.destroy(slug);
+    const project = await projectUsecase.destroy(request.user.id, slug);
     response.success({ project });
   } catch (error) {
     response.error(error.status, error.message);

@@ -5,8 +5,8 @@ const router = express.Router();
 
 router.get("/", type_recurringUseCase.index);
 router.get("/:code", type_recurringUseCase.show);
-router.post("/", type_recurringUseCase.create);
-router.put("/:code", type_recurringUseCase.update);
-router.delete("/:code", type_recurringUseCase.delete);
+//.post("/", type_recurringUseCase.create);
+//router.put("/:code", type_recurringUseCase.update);
+//router.delete("/:code", type_recurringUseCase.delete);
 
 module.exports = router;
