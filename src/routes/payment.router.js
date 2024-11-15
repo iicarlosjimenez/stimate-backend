@@ -4,6 +4,7 @@ const PaymentUseCase = require("../usecases/payments.usecase")
 const router = express.Router();
 
 router.get("/", PaymentUseCase.index); // check status
+router.post("/webhook", express.json({ type: 'application/json' }), PaymentUseCase.webhook); // check status
 router.get("/config", PaymentUseCase.getPrices); // configuration
 router.get("/products", PaymentUseCase.getProducts); // products index
 router.post("/product/create", PaymentUseCase.createProduct); // product store

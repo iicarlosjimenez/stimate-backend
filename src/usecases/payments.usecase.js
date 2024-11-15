@@ -1,6 +1,7 @@
 const CreateError = require("../libs/CreateError");
 const validator = require("../libs/validator");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
+const logger = require("../libs/logger")
 
 class PaymentUseCase {
    constructor() {
@@ -241,6 +242,26 @@ class PaymentUseCase {
       } catch (error) {
          response.error(error.status, error.messages)
       }
+   }
+
+   webhook = async (request, response) => {
+      const event = request.body;
+
+      // Archivo log en la carpeta ./log/webhook.log
+      switch (event.type) {
+         case 'payment_intent.succeeded':
+            const paymentIntent = event.data.object;
+            // Then define and call a method to handle the successful payment intent.
+            // handlePaymentIntentSucceeded(paymentIntent);
+            await logger.logToFile(`${JSON.stringify(paymentIntent)}`);
+            break;
+            
+         // ... handle other event types
+         default:
+            console.log(`Unhandled event type ${event.type}`);
+      }
+
+      return response.success({ received: true })
    }
 
 }
