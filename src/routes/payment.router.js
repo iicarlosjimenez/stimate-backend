@@ -1,7 +1,10 @@
 const express = require("express");
 const PaymentUseCase = require("../usecases/payments.usecase")
+const auth = require("../middlewares/authMiddleware");
 
 const router = express.Router();
+
+router.use(auth);
 
 router.get("/", PaymentUseCase.index); // check status
 router.post("/webhook", express.json({ type: 'application/json' }), PaymentUseCase.webhook); // check status
