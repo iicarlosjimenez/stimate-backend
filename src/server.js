@@ -10,7 +10,6 @@ const paymentRouter = require("./routes/payment.router")
 const project_status = require("./routes/project_status.router")
 const type_recurring = require("./routes/type_recurring.router")
 const area = require("./routes/area.router")
-const sendEmail = require("./libs/email");
 
 app.use(cors())
 app.use(express.json())
@@ -21,11 +20,13 @@ if (
    !process.env.STRIPE_PUBLISHABLE_KEY 
 ) {
    console.error(
-      "The .env file is not configured. Follow the instructions in the readme to configure the .env file. https://github.com/stripe-samples/subscription-use-cases"
+      "The .env file is not configured. " +
+      "Follow the instructions in the readme to configure the .env file. " +
+      "https://github.com/stripe-samples/subscription-use-cases"
    );
 } 
 else {
-   console.error("Stripe environments, OK!");
+   console.log("Stripe environments, OK!");
    
 }
 
