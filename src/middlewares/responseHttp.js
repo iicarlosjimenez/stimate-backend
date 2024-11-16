@@ -31,7 +31,7 @@ function responseMiddleware(req, res, next) {
     * @param {string|string[]} message - Mensaje o lista de mensajes de error.
     * @returns {void}
     */
-   res.error = function (code = null, message) {
+   res.error = function (code = null, message = null) {
       res.status(code || 500);
       res.json({
          success: false,

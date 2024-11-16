@@ -1,6 +1,6 @@
-const cors = require('cors')
-const express = require('express')
-const usersRouter = require('./routes/users.router')
+const cors = require("cors")
+const express = require("express")
+const usersRouter = require("./routes/users.router")
 const responseMiddleware = require("./middlewares/responseHttp");
 
 const app = express()
@@ -33,7 +33,7 @@ else {
 // Rutas
 app.use("/project", projectRouter)
 app.use("/payment", paymentRouter)
-app.use('/users', usersRouter)
+app.use("/users", usersRouter)
 app.use("/status", project_status)
 app.use("/type_recurring", type_recurring)
 app.use("/area", area)
@@ -48,5 +48,15 @@ app.get("/", (request, response) => {
       response.error(code, message)
    }
 })
+
+// Middleware para manejo de rutas no encontradas (404)
+app.use((request, response) => {
+   response.error(404, {
+      status: "error",
+      message: "Not found",
+      path: request.originalUrl,
+      method: request.method
+   });
+});
 
 module.exports = app
