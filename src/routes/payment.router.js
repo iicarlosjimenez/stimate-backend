@@ -7,15 +7,15 @@ const router = express.Router();
 router.use(auth);
 
 router.get("/", PaymentUseCase.index); // check status
-router.post("/webhook", express.json({ type: 'application/json' }), PaymentUseCase.webhook); // check status
+router.post("/webhook", express.json({ type: "application/json" }), PaymentUseCase.webhook); // check status
 router.get("/config", PaymentUseCase.getPrices); // configuration
 router.get("/products", PaymentUseCase.getProducts); // products index
-router.post("/product/create", PaymentUseCase.createProduct); // product store
-router.get("/customers", PaymentUseCase.getCustomers); // customers index
+// router.post("/product/create", PaymentUseCase.createProduct); // product store
+// router.get("/customers", PaymentUseCase.getCustomers); // customers index
 router.post("/customer", PaymentUseCase.getCustomer); // customer index
 router.post("/customer/create", PaymentUseCase.createCustomer); // customer store
-router.get("/subscriptions", PaymentUseCase.getSubscriptions); // subscriptions index
-router.post("/subscriptions/customer", PaymentUseCase.getSubscriptionsCustomer); // subscriptions customer index
+// router.get("/subscriptions", PaymentUseCase.getSubscriptions); // subscriptions index
+router.post("/subscription/customer", PaymentUseCase.getSubscriptionsCustomer); // subscriptions customer index
 router.post("/subscription/create", PaymentUseCase.createSubscription); // subscription store
 router.post("/subscription/cancel", PaymentUseCase.cancelSubscription); // subscription cancel
 router.get("/payments", async (request, response) => {

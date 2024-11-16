@@ -249,7 +249,7 @@ class PaymentUseCase {
 
       // Archivo log en la carpeta ./log/webhook.log
       switch (event.type) {
-         case 'payment_intent.succeeded':
+         case "payment_intent.succeeded":
             const paymentIntent = event.data.object;
             // Then define and call a method to handle the successful payment intent.
             // handlePaymentIntentSucceeded(paymentIntent);
