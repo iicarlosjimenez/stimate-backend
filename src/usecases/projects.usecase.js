@@ -2,14 +2,6 @@ const createError = require("http-errors");
 const Project = require("../models/project.model");
 const validator = require("../libs/validator");
 
-// Create ??
-async function store(project) {
-  // validar datos requeridos y tipo de entrada de datos
-  const projects = await Project.find({});
-
-  return projects;
-}
-
 // Create
 async function create(project) {
   if (
@@ -89,7 +81,6 @@ async function update(userId, slug, newProject) {
 }
 
 module.exports = {
-  store,
   index,
   update,
   destroy,

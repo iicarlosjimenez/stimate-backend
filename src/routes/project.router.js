@@ -35,7 +35,6 @@ router.patch("/:slug", async (request, response) => {
 router.post("/", async (request, response) => {
   try {
     const rules = {
-      owner_id: ["required"],
       name_project: ["required"],
       areas_selected: ["required"],
     };
@@ -44,7 +43,9 @@ router.post("/", async (request, response) => {
     if (!validate.validated)
       return response.error(400, validate.messages);
 
-    const { name_project, areas_selected, owner_id } = request.body;
+    const { name_project, areas_selected } = request.body;
+    const owner_id = request.user.id;  // Obtener el owner_id del request.user
+
     const code = await utils.generateCode({
       length: 6,
       options: ["letters", "caps", "numbers"],
@@ -66,8 +67,7 @@ router.post("/", async (request, response) => {
       };
     });
     const project = {
-      //owner_id:request.user.id
-      owner_id,
+      owner_id,  // Usar owner_id del request.user
       slug,
       name_project,
       team_project,
