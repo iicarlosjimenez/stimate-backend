@@ -74,13 +74,21 @@ const loginUser = async (email, password) => {
     throw new Error('Contraseña incorrecta');
   }
 
-  const isPlanActive = false // TODO: buscar en payment
-
   const token = jwt.sign(
     { id: user.id, email: user.email },
     process.env.JWT_SECRET,
     { expiresIn: '1h' }
   );
+
+  const toDay = new Date()
+
+  if (user.end_subscription && user.end_subscription < toDay ) {
+    user.state_subscription = false
+  } else if (user.end_subscription && user.end_subscription >= toDay ) {
+      user.state_subscription = true
+  }
+
+  await user.save()
 
   return {
     id: user.id, 
@@ -88,7 +96,7 @@ const loginUser = async (email, password) => {
     email: user.email,
     customer_ids: user.customer_ids,
     token,
-    isPlanActive
+    state_subscription: user.state_subscription,
   };
 };
 

@@ -26,6 +26,12 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
 },
+state_subscription: {
+    type: Boolean,
+    default: false,
+},
+start_subscription: Date,
+end_subscription: Date,
 },
  {
   timestamps: true 
