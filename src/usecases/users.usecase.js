@@ -6,45 +6,61 @@ const sendEmail = require("../libs/email");
 
 const registerUser = async (userData) => {
   const { name, email, password, provider } = userData;
-  const isProvider = provider != 'credentials'
-
+  const isProvider = provider != 'credentials';
+  
+  // Primero buscar si existe el usuario
   let user = await User.findOne({ email });
+
+  // Si el usuario ya existe y es login con credenciales, lanzar error
   if (user && !isProvider) {
     throw new Error('El usuario ya existe');
   }
 
-  let hashedPassword = null;
-  if (!isProvider && password) {
-    const salt = await bcrypt.genSalt(10);
-    hashedPassword = await bcrypt.hash(password, salt);
-  }
+  // Si el usuario ya existe (caso Google), validar suscripción
+  if (user && isProvider) {
+    const toDay = new Date();
+    if (user.end_subscription && user.end_subscription < toDay) {
+      user.state_subscription = false;
+    } else if (user.end_subscription && user.end_subscription >= toDay) {
+      user.state_subscription = true;
+    }
+    await user.save();
+  } 
+  // Si el usuario no existe, crear uno nuevo
+  else {
+    let hashedPassword = null;
+    if (!isProvider && password) {
+      const salt = await bcrypt.genSalt(10);
+      hashedPassword = await bcrypt.hash(password, salt);
+    }
 
-  if (!user) {
-    // const token_verification = ... no sé como se tenga que generar un token para correo
     const token_verification = jwt.sign({ email }, privateKey, { expiresIn: '1h' });
 
     user = new User({
       name,
       email,
       password: hashedPassword,
-      token_verification,// hasta este punto, hay que almacenarle un 
-      isVerified: false
+      token_verification,
+      isVerified: false,
+      state_subscription: false,
+      start_subscription: null,
+      end_subscription: null
     });
 
-    // TODO: aquí se debe usar el sendEmail()
-
+    // Enviar email de verificación
     const to = user.email;
-    const subject = "Stimate - Verificación de correo"
-    const html = `<a href='${process.env.NEXT_PUBLIC_END_POINT}/verificacion/${token_verification}'>Verificar correo</a>`
+    const subject = "Stimate - Verificación de correo";
+    const html = `<a href='${process.env.NEXT_PUBLIC_END_POINT}/verificacion/${token_verification}'>Verificar correo</a>`;
     await sendEmail({
-        to,
-        subject,
-        html: html || ''
+      to,
+      subject,
+      html: html || ''
     });
 
     await user.save();
   }
 
+  // Generar token JWT
   const token = jwt.sign(
     {
       id: user.id,
@@ -169,3 +185,68 @@ module.exports = {
   deleteUser,
   verifyToken
 };
+
+
+
+
+
+
+
+
+/* const registerUser = async (userData) => {
+  const { name, email, password, provider } = userData;
+  const isProvider = provider != 'credentials'
+
+  let user = await User.findOne({ email });
+  if (user && !isProvider) {
+    throw new Error('El usuario ya existe');
+  }
+
+  let hashedPassword = null;
+  if (!isProvider && password) {
+    const salt = await bcrypt.genSalt(10);
+    hashedPassword = await bcrypt.hash(password, salt);
+  }
+
+  if (!user) {
+    // const token_verification = ... no sé como se tenga que generar un token para correo
+    const token_verification = jwt.sign({ email }, privateKey, { expiresIn: '1h' });
+
+    user = new User({
+      name,
+      email,
+      password: hashedPassword,
+      token_verification,// hasta este punto, hay que almacenarle un 
+      isVerified: false
+    });
+
+    // TODO: aquí se debe usar el sendEmail()
+
+    const to = user.email;
+    const subject = "Stimate - Verificación de correo"
+    const html = `<a href='${process.env.NEXT_PUBLIC_END_POINT}/verificacion/${token_verification}'>Verificar correo</a>`
+    await sendEmail({
+        to,
+        subject,
+        html: html || ''
+    });
+
+    await user.save();
+  }
+
+  const token = jwt.sign(
+    {
+      id: user.id,
+      email: user.email
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: '1h'
+    }
+  );
+
+  return {
+    user,
+    token
+  };
+}; */
