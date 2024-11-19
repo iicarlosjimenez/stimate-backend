@@ -172,7 +172,7 @@ class PaymentUseCase {
    getSubscriptionsCustomer = async (request, response) => {
       try {
          const rules = {
-            customer: ["required", "string"]
+            email: ["required"]
          };
          const validate = validator(rules, request.body);
       
@@ -180,10 +180,20 @@ class PaymentUseCase {
             throw new CreateError(400, validate.messages);
          }
       
-         const { customer } = request.body
+         const { email } = request.body
+         const customers = await stripe.customers.search({
+            query: 'email:\'' + email + '\' '
+         })
+
+         if (!customers.data[0]) {
+            response.success({ subscriptions: [] })
+         }
+         
+         const customer = customers.data[0]
+
          const subscriptions = await stripe.subscriptions.list({
             status: "active",
-            customer,
+            customer: customer.id,
             expand: ["data.plan.product"]
          });
 
