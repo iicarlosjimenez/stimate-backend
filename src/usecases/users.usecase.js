@@ -137,10 +137,38 @@ const getUserById = async (userId) => {
 };
 
 const updateUser = async (userId, updateData) => {
-  const user = await User.findByIdAndUpdate(userId, updateData, { new: true });
+  const {
+    name,
+    email,
+    customer_ids,
+    start_subscription,
+    end_subscription
+  } = updateData.user;
+
+  const updateFields = {
+    name,
+    email,
+    customer_ids,
+    start_subscription: start_subscription ? new Date(start_subscription) : undefined,
+    end_subscription: end_subscription ? new Date(end_subscription) : undefined
+  };
+
+  Object.keys(updateFields).forEach(key =>
+    updateFields[key] === undefined && delete updateFields[key]
+  );
+
+  const user = await User.findByIdAndUpdate(
+    userId, 
+    updateFields, 
+    { 
+      new: true 
+    }
+  );
+
   if (!user) {
     throw new Error("Usuario no encontrado");
   }
+
   return user;
 };
 

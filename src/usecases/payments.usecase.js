@@ -1,7 +1,8 @@
 const CreateError = require("../libs/CreateError");
 const validator = require("../libs/validator");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
-const logger = require("../libs/logger")
+const logger = require("../libs/logger");
+const User = require("../models/User.model");
 
 class PaymentUseCase {
    constructor() {
@@ -16,11 +17,11 @@ class PaymentUseCase {
       } catch (error) {
          const code = error.status
          const message = error.messages
-   
+
          response.error(code, message)
       }
    }
-   
+
    // ### Precios
    getPrices = async (request, response) => {
       try {
@@ -29,49 +30,49 @@ class PaymentUseCase {
             publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
             prices: prices.data,
          }
-   
+
          response.success(data)
       } catch (error) {
          response.error(error.status, error.messages);
       }
    }
-   
+
    // ### Productos
    getProducts = async (request, response) => {
       try {
          const products = await stripe.products.list();
-   
+
          response.success({ products: products.data })
       } catch (error) {
          response.error(error.status, error.messages)
       }
    }
-   
+
    createProduct = async (request, response) => {
       try {
          const rules = {
             name: ["required"]
          };
          const validate = validator(rules, request.body);
-   
+
          if (!validate.validated) {
             throw new CreateError(400, validate.messages);
          }
-   
+
          const products = await stripe.products.search({
             query: 'name: \'' + request.body.name + '\'', limit: 1
          });
-   
+
          let product = null
          if (products.data.length)
             product = products.data[0]
          else
             product = await stripe.products.create(request.body)
-   
+
          const prices = await stripe.prices.search({
             query: 'product:\'' + product.id + '\' ',
          });
-   
+
          let price = null
          if (prices.data.length)
             price = prices.data[0]
@@ -84,80 +85,86 @@ class PaymentUseCase {
                },
                product: product.id
             })
-   
+
          response.success({ product, price })
       } catch (error) {
          response.error(error.status, error.messages)
       }
    }
-   
+
    // ### Clientes 
    getCustomers = async (request, response) => {
       try {
          const customerLists = await stripe.customers.list()
          const customers = customerLists.data
-   
+
          response.success({ customers })
       } catch (error) {
          response.error(error.status, error.messages)
       }
    }
-   
+
    getCustomer = async (request, response) => {
       try {
          const rules = {
             email: ["required", "email"]
          };
          const validate = validator(rules, request.body);
-   
+
          if (!validate.validated) {
             throw new CreateError(400, validate.messages);
          }
          const { email } = request.body
-   
+
          const customers = await stripe.customers.search({
             query: 'email:\'' + email + '\' '
          })
-   
+
          response.success({ customer: customers.data[0] })
       } catch (error) {
          response.error(error.status, error.messages)
       }
    }
-   
+
    createCustomer = async (request, response) => {
       try {
          const rules = {
             email: ["required", "email"]
          };
          const validate = validator(rules, request.body);
-   
+
          if (!validate.validated) {
             throw new CreateError(400, validate.messages);
          }
          const { email } = request.body
-   
-         // si no cuenta con id, crearlo en stripe 
-   
-         // Validar si existe el correo en nuestra base de datos
-         // Si no existe, crearlo en stripe
-         // Si existe, validar si cuenta con id de stripe
          let customer = null
+
          const customers = await stripe.customers.search({
             query: 'email:\'' + email + '\' '
          })
-   
-         if (!customers.data.length)
+
+         if (!customers.data || customers.data.length === 0)
             customer = await stripe.customers.create({ email })
          else
             customer = customers.data[0]
-   
-         response.success({customer})
+
+         const user = await User.findByIdAndUpdate(
+            request.user.id,
+            {
+               $set: {
+                  'customer_ids.stripe': customer.id
+               }
+            },
+            {
+               new: true
+            });
+
+         response.success({ customer })
       } catch (error) {
          response.error(error.status, error.messages)
       }
    }
-   
+
    // ### Suscripciones
    getSubscriptions = async (request, response) => {
       try {
@@ -168,18 +175,18 @@ class PaymentUseCase {
          response.error(error.status, error.messages)
       }
    }
-   
+
    getSubscriptionsCustomer = async (request, response) => {
       try {
          const rules = {
             email: ["required"]
          };
          const validate = validator(rules, request.body);
-      
+
          if (!validate.validated) {
             throw new CreateError(400, validate.messages);
          }
-      
+
          const { email } = request.body
          const customers = await stripe.customers.search({
             query: 'email:\'' + email + '\' '
@@ -192,22 +199,22 @@ class PaymentUseCase {
          const customer = customers.data[0]
 
          const subscriptions = await stripe.subscriptions.list({
-            status: "active",
+            // status: "active",
             customer: customer.id,
             expand: ["data.plan.product"]
          });
 
-         response.success({ 
-         subscriptions: subscriptions.data,
-         customer: customer  // Optional: include customer details
-      });
-   } catch (error) {
-      console.error('Error in getSubscriptionsCustomer:', error);
-      response.error(error.status, error.message)
-   }
+         response.success({
+            subscriptions: subscriptions.data,
+            customer: customer  // Optional: include customer details
+         });
+      } catch (error) {
+         console.error('Error in getSubscriptionsCustomer:', error);
+         response.error(error.status, error.message)
+      }
 
    }
-   
+
    createSubscription = async (request, response) => {
       try {
          const rules = {
@@ -215,13 +222,13 @@ class PaymentUseCase {
             price: ["required"]
          };
          const validate = validator(rules, request.body);
-      
+
          if (!validate.validated) {
             return response.error(400, validate.messages)
          }
-      
+
          const { customer, price } = request.body
-      
+
          const subscription = await stripe.subscriptions.create({
             customer,
             items: [{ price }],
@@ -270,7 +277,7 @@ class PaymentUseCase {
             // handlePaymentIntentSucceeded(paymentIntent);
             await logger.logToFile(`${JSON.stringify(paymentIntent)}`);
             break;
-            
+
          // ... handle other event types
          default:
             console.log(`Unhandled event type ${event.type}`);
