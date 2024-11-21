@@ -185,10 +185,10 @@ class PaymentUseCase {
             query: 'email:\'' + email + '\' '
          })
 
-         if (!customers.data[0]) {
-            response.success({ subscriptions: [] })
+         if (!customers.data || customers.data.length === 0) {
+            return response.success({ subscriptions: [] });
          }
-         
+
          const customer = customers.data[0]
 
          const subscriptions = await stripe.subscriptions.list({
@@ -197,10 +197,15 @@ class PaymentUseCase {
             expand: ["data.plan.product"]
          });
 
-         response.success({ subscriptions: subscriptions.data })
-      } catch (error) {
-         response.error(error.status, error.message)
-      }
+         response.success({ 
+         subscriptions: subscriptions.data,
+         customer: customer  // Optional: include customer details
+      });
+   } catch (error) {
+      console.error('Error in getSubscriptionsCustomer:', error);
+      response.error(error.status, error.message)
+   }
+
    }
    
    createSubscription = async (request, response) => {
