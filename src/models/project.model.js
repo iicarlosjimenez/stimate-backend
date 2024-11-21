@@ -79,7 +79,7 @@ const schema = new mongoose.Schema({
         required: true,
       },
       type_recurring: {
-        type: mongoose.Types.ObjectId,
+        type: String,
       },
       description: {
         type: String,

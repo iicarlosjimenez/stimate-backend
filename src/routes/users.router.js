@@ -1,9 +1,9 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const authMiddleware = require('../middlewares/authMiddleware')
-const userUsecase = require('../usecases/users.usecase');
+const authMiddleware = require("../middlewares/authMiddleware")
+const userUsecase = require("../usecases/users.usecase");
 
-router.post('/register', async (req, res) => {
+router.post("/register", async (req, res) => {
   try {
     const result = await userUsecase.registerUser(req.body);
     res.status(201).json(result);
@@ -12,7 +12,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-router.post('/login', async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const result = await userUsecase.loginUser(email, password);
@@ -22,7 +22,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.get('/', authMiddleware, async (req, res) => {
+router.get("/", authMiddleware, async (req, res) => {
   try {
     const users = await userUsecase.getAllUsers();
     res.json(users);
@@ -31,7 +31,7 @@ router.get('/', authMiddleware, async (req, res) => {
   }
 });
 
-router.post('/verificacion', async (request, response) => {
+router.post("/verificacion", async (request, response) => {
   try {
      const { token } = request.body;
      const { status, message } = await userUsecase.verifyToken(token);
@@ -42,7 +42,7 @@ catch (error) {
   }
 });
 
-router.get('/:id', authMiddleware,  async (req, res) => {
+router.get("/:id", authMiddleware,  async (req, res) => {
   try {
     const user = await userUsecase.getUserById(req.params.id);
     res.json(user);
@@ -51,7 +51,7 @@ router.get('/:id', authMiddleware,  async (req, res) => {
   }
 });
 
-router.put('/:id', authMiddleware,  async (req, res) => {
+router.put("/:id", authMiddleware,  async (req, res) => {
   try {
     const user = await userUsecase.updateUser(req.params.id, req.body);
     res.json(user);
@@ -60,7 +60,7 @@ router.put('/:id', authMiddleware,  async (req, res) => {
   }
 });
 
-router.delete('/:id', authMiddleware, async (req, res) => {
+router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const result = await userUsecase.deleteUser(req.params.id);
     res.json(result);
