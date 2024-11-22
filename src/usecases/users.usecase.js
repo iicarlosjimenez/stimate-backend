@@ -15,6 +15,7 @@ const registerUser = async (userData) => {
     throw new Error("El usuario ya existe");
   }
 
+  let hashedPassword = null;
   // Si el usuario ya existe (caso Google), validar suscripción
   if (user && isProvider) {
     const toDay = new Date();
@@ -27,7 +28,6 @@ const registerUser = async (userData) => {
   } 
   // Si el usuario no existe, crear uno nuevo
   else {
-    let hashedPassword = null;
     if (!isProvider && password) {
       const salt = await bcrypt.genSalt(10);
       hashedPassword = await bcrypt.hash(password, salt);
