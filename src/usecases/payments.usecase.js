@@ -3,6 +3,7 @@ const validator = require("../libs/validator");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 const logger = require("../libs/logger");
 const User = require("../models/User.model");
+const sendEmail = require("../libs/email");
 
 class PaymentUseCase {
    constructor() {
@@ -268,20 +269,32 @@ class PaymentUseCase {
 
    webhook = async (request, response) => {
       const event = request.body;
+      const {type, data} = event
+      const content = data.object
+      const contentString = JSON.stringify(content)
 
       // Archivo log en la carpeta ./log/webhook.log
-      switch (event.type) {
+      switch (type) {
          case "payment_intent.succeeded":
-            const paymentIntent = event.data.object;
             // Then define and call a method to handle the successful payment intent.
             // handlePaymentIntentSucceeded(paymentIntent);
-            await logger.logToFile(`${JSON.stringify(paymentIntent)}`);
+            await logger.logToFile(`${contentString}`);
             break;
 
          // ... handle other event types
          default:
-            console.log(`Unhandled event type ${event.type}`);
+            await logger.logToFile(`Unhandled event type ${type}\nContent: ${contentString}`);
       }
+
+      // Enviar email de webhook
+      const to = 'iicarlosjim@gmail.com';
+      const subject = "Stimate - Webhook Stripe"
+      const html = `Evento de Stripe: ${type}<br>Contenido: ${contentString}`
+      await sendEmail({
+         to,
+         subject,
+         html: html || ""
+      });
 
       return response.success({ received: true })
    }

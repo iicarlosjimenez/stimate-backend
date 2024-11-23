@@ -15,10 +15,27 @@ const transporter = nodemailer.createTransport({
    // logger: true // Habilita logging
 });
 
+// Handlebars como el motor de plantillas
+/**
+ * 
+transporter.use(
+   'compile',
+   hbs({
+      viewEngine: {
+         extname: '.hbs',
+         partialsDir: path.resolve('./views/emailTemplates'),
+         defaultLayout: false,
+      },
+      viewPath: path.resolve('./views/emailTemplates'),
+      extName: '.hbs',
+   })
+);
+ */
+
 // Función de utilidad para enviar correos
-const sendEmail = async ({ to, cc, bcc, subject, text, html }) => {
-   if (!to || !subject || (!text && !html)) {
-      throw new CreateError(500, 'Faltan campos requeridos (to, subject, y text o html)');
+const sendEmail = async ({ to, cc, bcc, subject, text, html, template, context }) => {
+   if (!to || !subject || (!text && !html && !template && !context)) {
+      throw new CreateError(500, 'Faltan campos requeridos (to, subject y, text, html, template o context)');
    }
 
    try {
@@ -41,7 +58,7 @@ const sendEmail = async ({ to, cc, bcc, subject, text, html }) => {
             // 'X-MSMail-Priority': 'High',
             // 'Importance': 'high',
             'List-Unsubscribe': `<mailto:${process.env.MAIL_USERNAME}?subject=unsubscribe>`,
-            'Message-ID': `<${Date.now()}@kodinc.dev>`
+            'Message-ID': `<${Date.now()}@stimate.co>`
          },
          envelope: {
             from: process.env.MAIL_USERNAME,
@@ -49,9 +66,11 @@ const sendEmail = async ({ to, cc, bcc, subject, text, html }) => {
          },
          encoding: 'utf-8',
          // priority: 'high'
+         // template
+         // context
       };
 
-      const messageId = `<${Date.now()}-${Math.random().toString(36).substring(2, 15)}@kodinc.dev>`;
+      const messageId = `<${Date.now()}-${Math.random().toString(36).substring(2, 15)}@stimate.co>`;
       mailOptions.messageId = messageId;
 
       const info = await transporter.sendMail(mailOptions);
