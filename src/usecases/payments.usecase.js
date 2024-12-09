@@ -234,6 +234,7 @@ class PaymentUseCase {
             customer,
             items: [{ price }],
             payment_behavior: "default_incomplete",
+            payment_settings: { save_default_payment_method: "on_subscription" },
             expand: ["latest_invoice.payment_intent"],
          });
 
@@ -242,7 +243,7 @@ class PaymentUseCase {
             clientSecret: subscription.latest_invoice.payment_intent.client_secret
          })
       } catch (error) {
-         response.error(error.status, error.messages)
+         response.error(error.status, error.messages || error.message)
       }
    }
 
